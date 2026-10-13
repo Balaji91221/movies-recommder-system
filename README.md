@@ -1,65 +1,58 @@
 # Movie Recommendation System
 
-This is a simple movie recommendation system built using Streamlit, pandas, and the Movie Database (TMDb) API. The recommendation system suggests five movies based on user input.
+**Choose a movie and explore five similar titles.**
 
-## Getting Started
+A Streamlit interface backed by a precomputed movie-similarity matrix. The application retrieves recommended titles from local artifacts and uses TMDb to display their posters.
 
-### Prerequisites
+## How it helps
 
-Make sure you have the necessary dependencies installed:
+A familiar movie provides a useful starting point for discovery. This project connects a recommendation notebook to a simple interface so the retrieval step and result presentation are easy to follow.
+
+## Recommendation flow
+
+1. Select a title from the movie table.
+2. Find the corresponding row in the similarity matrix.
+3. Sort scores and select five neighboring titles, excluding the first ranked entry.
+4. Fetch their poster images and display the results side by side.
+
+The app serves precomputed similarities; it does not train or update a recommendation model while you use it.
+
+## Setup and required artifacts
+
+Use Python and install the app's dependencies:
 
 ```bash
-pip install streamlit pandas requests
+python -m pip install streamlit pandas requests
 ```
 
-# Installation
+Before launching, ensure both artifacts exist beside `app.py`:
 
+| Artifact | Repository status |
+|---|---|
+| `movie_dict.pkl` | Included |
+| `similarity.pkl` | Required by the app, not included in the current tree |
+
+Use [`movie recommendation system.ipynb`](<movie recommendation system.ipynb>) to inspect the preparation workflow and provide the expected datasets and generated matrix. Configure your own TMDb access in `fetch_poster`; the source does not currently read a dedicated API-key environment variable.
+
+```bash
+python -m streamlit run app.py
 ```
-git clone https://github.com/your_username/your_repository.git
-cd your_repository
 
+## Architecture
+
+```mermaid
+flowchart LR
+  Artifacts[Movie table and similarity matrix] --> Ranking[Similarity ranking]
+  Selection[Selected movie] --> Ranking
+  Ranking --> Titles[Five recommended titles]
+  Titles --> TMDb[TMDb poster lookup]
+  TMDb --> UI[Streamlit results]
 ```
-Download the required pickle files: movie_dict.pkl and similarity.pkl.
-# Usage
-Run the Streamlit app:
-```
-streamlit run app.py
 
-```
-Visit the provided URL in your browser to interact with the Movie Recommendation System.
+## Project guide
 
-## Functionality
+[`app.py`](app.py) contains the UI, ranking, and poster lookup. The notebook holds the data-preparation experiments. Only load serialized artifacts from a trusted source and matching preparation workflow.
 
-- **Select a Movie:**
-  - Type or select a movie from the dropdown menu.
+## Attribution
 
-- **Get Recommendations:**
-  - Click the "Recommend" button to receive a list of five movie recommendations.
-
-- **View Recommendations:**
-  - The recommended movies and their posters will be displayed in a responsive layout.
-
-## Code Overview
-
-- **`fetch_poster(movie_id)`:** Fetches the poster path for a given movie ID using the TMDb API.
-
-- **`recommend(movie)`:** Recommends five movies based on the input movie using collaborative filtering and similarity scores.
-
-- **Loading precomputed data from pickle files:** `movie_dict.pkl` and `similarity.pkl`.
-
-- **Streamlit UI:**
-  - The title of the web app is set to "Movie Recommender System."
-  - A dropdown menu allows the user to select a movie.
-  - Clicking the "Recommend" button triggers the recommendation function.
-  - Displaying recommended movies and their posters in a responsive layout.
-
-## Acknowledgments
-
-- Movie data is sourced from [TMDb](https://www.themoviedb.org/).
-
-## Disclaimer
-
-This app uses data from TMDb but is not endorsed or certified by TMDb.
-
-Feel free to customize the code according to your needs and add additional features to enhance the user experience!
-
+Movie data and posters are provided through [TMDb](https://www.themoviedb.org/). This application is not endorsed or certified by TMDb.
